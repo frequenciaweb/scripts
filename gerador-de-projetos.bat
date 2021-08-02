@@ -1,7 +1,7 @@
 @echo off
 cls
 
-ECHO GERADOR DE PROJETOS
+ECHO GERADOR DE PROJETOS 1.1
 
 ECHO Escolha o nome para solucao
 set /p namespace="Solution: "
@@ -60,11 +60,6 @@ if %projeto%=='1'(set criarProjetoApi=y)
 if %projeto%=='2'(set criarProjetoApi=y&&set criarProjetoMVC=y)
 if %projeto%=='4'(set criarProjetoApi=y&&set criarProjetoAngular=y)
 if %projeto%=='5'(set criarProjetoApi=y&&set criarProjetoVUE=y)
-
-
-echo '%projeto% Api (%criarProjetoApi%) MVC (%criarProjetoMVC%) Angular (%criarProjetoAngular%) Vue (%criarProjetoVUE%)'
-
-pause
 
 set caminhoProjetoDomain=Domain\%namespace%.Domain
 set caminhoProjetoDomainService=Domain\%namespace%.Domain.Services
