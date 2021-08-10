@@ -220,12 +220,12 @@ del UnitTest1.cs /s
 del WeatherForecast.cs /s
 del WeatherForecastController.cs /s
 
+dotnet build
+
 ECHO Configurando GIT....
 
 git init
 dotnet new gitignore
-
-dotnet build
 
 if %usuarioGit%=="" GOTO abrir_ide else GOTO realizar_push
 
@@ -249,4 +249,5 @@ goto:eof
 echo 'Abrir IDE'
 if %ide%==2 code .
 if %ide%==1 %namespace%.sln
+
 goto:eof
