@@ -1,0 +1,2 @@
+def atualizarProjeto():
+    print('atualizar') 
