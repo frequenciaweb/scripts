@@ -36,29 +36,27 @@ def gerarNovoProjeto():
     nome = input("Escolha o Nome para Solução: ")    
     diretorio = input("Escolha o diretório: ")     
     usuario = input("Informe Usuário do GitHub para Preparar o git (opcional): ")    
-    tipo = input("Escolha O Tipo de Projeto \n"
-        "( 1 ) MVC \n"
-        "( 2 ) API \n"
-        "( 3 ) MVC + API \n"
-        "( 4 ) ANGULAR + API \n"
-        "( 5 ) VUEJS + API \n"
-        "Escolha: "
-        )
+    tipo = input('''Escolha O Tipo de Projeto:
+    ( 1 ) MVC
+    ( 2 ) API
+    ( 3 ) MVC + API
+    ( 4 ) ANGULAR + API
+    ( 5 ) VUEJS + API
+    Escolha: ''')
 
-    arquitetura = input("Arquitetura\n"
-    "( 1 ) Driven Domain Design")  
+    arquitetura = input('''Arquitetura
+    ( 1 ) Driven Domain Design: ''')  
 
-    confirma = input("GERADOR DE PROJETOS"
-                "\n Solution" , nome,
-                "\n Path" , diretorio,
-                "\n Git" , usuario,
-                 "\n Tipo" , tipo,
-                "\n ",
-                "\n Confirma os dados?: \n"
-                "( 0 ) Não \n"
-                "( 1 ) Sim \n"    
-                "Confirmação: "
-                )  
+    confirma = input(f'''GERADOR DE PROJETOS
+    Solution" , { nome },
+    Path" , { diretorio },
+    Git" , { usuario },
+    Tipo" , { tipo },
+    
+    Confirma os dados?:
+    ( 0 ) Não
+    ( 1 ) Sim
+    Confirmação: ''')
 
     if confirma == "1" :     
        configurarProjeto(nome, diretorio, usuario, tipo, arquitetura)
