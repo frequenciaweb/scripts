@@ -7,11 +7,10 @@ class Projeto:
         self.diretorio = diretorio
         self.tipo = tipo
         self.arquitetura = arquitetura
-        self.usuario = usuario
-        os.chdir(diretorio)
+        self.usuario = usuario        
 
      def gerarSolucao(self):
        comando = 'dotnet new sln -o '+ self.nome
        os.system(comando)   
        print("Solução "+self.nome+" Gerada!")
-       os.chdir(self.nome)
+       

@@ -15,20 +15,22 @@ os.system('cls' if os.name == 'nt' else 'clear')
 def main():
     print('''Bem vindo ao Gerador de Projetos 2.0
     Requisitos Básicos:
-    - NetCore SDK
+    - NetCore SDK 5
     - NodeJS
     - NPM
         - Angular CLI
         - VueJS CLI
     - Git''')
 
-    acao = input('''\nDeseja criar ou atualizar um projeto?
+    acao = input('''Deseja criar ou atualizar um projeto?
     ( 1 ) Criar Projeto
     ( 2 ) Atualizar Projeto
     Escolha: ''')
 
+    #Verificando qual ação será tomada 
+    #Atualizar projeto ou gerar um novo
     if acao == '1': 
-        src.novo_projeto.gerarNovoProjeto()
+        src.novo_projeto.gerarNovoProjeto('true')
     
     if acao == '2':
         src.atualiza_projeto.atualizarProjeto()         
