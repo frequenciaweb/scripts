@@ -1,7 +1,7 @@
 import os
 import sys
-from src.models.projeto import Projeto
-from src.models.configuracao_projeto import ConfiguracaoProjeto
+from models.projeto import Projeto
+from models.configuracao_projeto import ConfiguracaoProjeto
 
 def adicionarProjetoNaSolucao(solucao,projeto):
     comando = "dotnet sln "+solucao+".sln add "+projeto.caminho
