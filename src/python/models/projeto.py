@@ -10,7 +10,7 @@ class Projeto:
         self.usuario = usuario        
 
      def gerarSolucao(self):
-       comando = 'dotnet new sln -o '+ self.nome
+       comando = 'dotnet new sln --name '+ self.nome
        os.system(comando)   
        print("Solução "+self.nome+" Gerada!")
        

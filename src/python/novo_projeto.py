@@ -3,9 +3,11 @@ import sys
 from models.projeto import Projeto
 from models.configuracao_projeto import ConfiguracaoProjeto
 
-def adicionarProjetoNaSolucao(solucao,projeto):
-    comando = "dotnet sln "+solucao+".sln add "+projeto.caminho
+def executarComando(comando):
     os.system(comando)
+
+def adicionarProjetoNaSolucao(solucao,projeto):
+    executarComando("dotnet sln "+solucao+".sln add "+projeto.caminho)    
 
 def mudarDiretorio(nome):
     atual = os.getcwd()
@@ -33,17 +35,28 @@ def configura_camadas_arquitetura(nome):
 
 def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura):
 
-    mudarDiretorio(diretorio)# mudando para o diretorio raiz onde ficara o projeto
+    diretorioRaiz = diretorio
+    diretorioSrc = diretorio+ "/" + nome+"/src/"
+    diretorioProjeto = diretorio+ "/" + nome+"/"
     
-    comando = "rd "+nome+" /s /q"
-    os.system(comando)# Removendo o diretorio da solução caso ele já existe
+    mudarDiretorio(diretorioRaiz)# mudando para o diretorio raiz onde ficara a pasta do projeto
+  
+    executarComando("rd "+nome+" /s /q")# Removendo o diretorio da solução caso ele já existe    
+
+    os.makedirs(diretorioSrc)#criando diretorio do projeto
+
+    mudarDiretorio(diretorioSrc)#mudando para o diretorio do projeto    
 
     # Preparando o projeto
-    projeto = Projeto(nome,diretorio,tipo,arquitetura,usuario)
+    projeto = Projeto(nome,diretorioSrc,tipo,arquitetura,usuario)
     projeto.gerarSolucao()    
     
-    mudarDiretorio(nome)#mudando para o diretorio do projeto
+    mudarDiretorio(diretorioProjeto)#mudando para o diretorio da solução    
 
+    executarComando("git init && dotnet new gitignore && echo # Projeto "+nome+" >> README.md")# inicalizando o git    
+    
+    mudarDiretorio(diretorioSrc)#mudando para o diretorio do projeto    
+    
     # Verificando qual arquitetura foi escolhida
     # Executando a configuração
     projetos = []    
@@ -74,20 +87,19 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura):
     for projeto in projetos:
         projeto.gerar()
         adicionarProjetoNaSolucao(nome, projeto)
-   
 
-    mudarDiretorio(nome)#mudando para o diretorio do projeto
     #Deletando os arquivos desnecessarios 
-    os.system('del Class1.cs /s')
-    os.system('del UnitTest1.cs /s')
-    os.system('del WeatherForecast.cs /s')
-    os.system('del WeatherForecastController.cs /s')
+    
+    executarComando('del Class1.cs /s')
+    executarComando('del UnitTest1.cs /s')
+    executarComando('del WeatherForecast.cs /s')
+    executarComando('del WeatherForecastController.cs /s')
    
     #Compilando os projeto
-    os.system('dotnet build')
+    executarComando('dotnet build')
     
 def gerarNovoProjeto(debug):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    executarComando('cls' if os.name == 'nt' else 'clear')
    
     nome = ""
     diretorio = ""
@@ -131,7 +143,7 @@ def gerarNovoProjeto(debug):
         ( 1 ) Sim
         Confirmação: ''')      
 
-    os.system('cls' if os.name == 'nt' else 'clear')
+    executarComando('cls' if os.name == 'nt' else 'clear')
     print('Aguarde....')
 
     #Verificando resposta se deve contunar oprocesso    

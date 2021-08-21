@@ -7,7 +7,7 @@ class ConfiguracaoProjeto:
      self.nome = solucao
      self.cli = "dotnet new "+cli+" --name="+self.nome+"."+identificador+" --output="+pasta+"\\"+self.nome+"."+identificador
      self.projeto = self.nome+"."+identificador+".cs"
-     self.caminho = pasta+"\\"+self.nome+".Domain"
+     self.caminho = pasta+"\\"+self.nome+"."+pasta
 
      if (cli == 'angular'):
          self.cli = "ng new "+identificador

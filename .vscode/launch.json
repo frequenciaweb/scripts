@@ -8,7 +8,7 @@
             "name": "Python: Arquivo Atual",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "src/python/bot.py",
             "console": "integratedTerminal"
         }
     ]
