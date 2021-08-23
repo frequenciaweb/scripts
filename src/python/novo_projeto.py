@@ -1,7 +1,11 @@
 import os
 import sys
+import pandas as pd
+import numpy as np
 from models.projeto import Projeto
 from models.configuracao_projeto import ConfiguracaoProjeto
+from leitor_json import listarArquiteturas
+from leitor_json import retornaArquitetura
 
 def executarComando(comando):
     os.system(comando)
@@ -12,28 +16,23 @@ def adicionarProjetoNaSolucao(solucao,projeto):
 def mudarDiretorio(nome):
     atual = os.getcwd()
     if (atual != nome):
+       print('Mudando de '+atual+' para '+nome)
        os.chdir(nome) 
 
-def gerarArquiteturaCleanArquitecture(nome):
-    print('falta implementar')
-
-def gerarArquiteturaDDD(nome): 
-     os.mkdir('UI')
-     os.mkdir('Domain')
-     os.mkdir('Infra')
-     os.mkdir('Test')
-     return configura_camadas_arquitetura(nome)
-
-def configura_camadas_arquitetura(nome):
+def gerarArquitetura(index, solucao, diretorioBase): 
+   # Carregando o json da arquitetura selecionada
+    arquitetura = retornaArquitetura(int(index)-1, diretorioBase)
+    print("Arquitetura: "+arquitetura['name'])
     projetos = []
-    projetos.append(ConfiguracaoProjeto("Domain",nome,"Domain","classlib"))     
-    projetos.append(ConfiguracaoProjeto("Domain.Service",nome,"Domain","classlib")) 
-    projetos.append(ConfiguracaoProjeto("Infra.Data",nome,"Infra","classlib"))
-    projetos.append(ConfiguracaoProjeto("Infra.CorssCutting",nome,"Infra","classlib"))
-    projetos.append(ConfiguracaoProjeto("Test",nome,"Test","msTest"))    
+    for projeto in arquitetura['projects']:
+        folder = projeto['folder']
+        folder = folder.replace("%nameSolution%", solucao)
+        os.makedirs(folder)
+        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages']))
+        
     return projetos
 
-def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura):
+def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase):
 
     diretorioRaiz = diretorio
     diretorioSrc = diretorio+ "/" + nome+"/src/"
@@ -43,62 +42,59 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura):
   
     executarComando("rd "+nome+" /s /q")# Removendo o diretorio da solução caso ele já existe    
 
-    os.makedirs(diretorioSrc)#criando diretorio do projeto
+    os.makedirs(diretorioSrc)# criando diretorio do projeto
 
-    mudarDiretorio(diretorioSrc)#mudando para o diretorio do projeto    
+    mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
 
     # Preparando o projeto
     projeto = Projeto(nome,diretorioSrc,tipo,arquitetura,usuario)
     projeto.gerarSolucao()    
     
-    mudarDiretorio(diretorioProjeto)#mudando para o diretorio da solução    
+    mudarDiretorio(diretorioProjeto)# mudando para o diretorio da solução    
 
-    executarComando("git init && dotnet new gitignore && echo # Projeto "+nome+" >> README.md")# inicalizando o git    
+    executarComando("git init && dotnet new gitignore && echo # Projeto "+nome+" >> README.md")# inicializando o git    
     
-    mudarDiretorio(diretorioSrc)#mudando para o diretorio do projeto    
+    mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
     
     # Verificando qual arquitetura foi escolhida
     # Executando a configuração
-    projetos = []    
-    if projeto.arquitetura == "1":
-       projetos = gerarArquiteturaDDD(nome)
-
-    if projeto.arquitetura == "2":
-       projetos = gerarArquiteturaCleanArquitecture(nome)       
+    projetos = gerarArquitetura(projeto.arquitetura,nome, diretorioBase)    
 
     if (tipo == "1"):
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI","mvc"))
+       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
 
     if (tipo == "2"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","webapi"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
 
     if (tipo == "3"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","webapi"))
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI","mvc"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
+       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
     
     if (tipo == "4"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","webapi"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
        projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","angular"))
        
     if (tipo == "5"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","webapi"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
        projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","vue"))
  
     for projeto in projetos:
         projeto.gerar()
+        mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
         adicionarProjetoNaSolucao(nome, projeto)
 
-    #Deletando os arquivos desnecessarios 
+    # Deletando os arquivos desnecessarios 
     
     executarComando('del Class1.cs /s')
     executarComando('del UnitTest1.cs /s')
     executarComando('del WeatherForecast.cs /s')
     executarComando('del WeatherForecastController.cs /s')
    
-    #Compilando os projeto
+    # Compilando os projeto
     executarComando('dotnet build')
     
-def gerarNovoProjeto(debug):
+def gerarNovoProjeto(debug = 'false', diretorioBase = ""):
+    
     executarComando('cls' if os.name == 'nt' else 'clear')
    
     nome = ""
@@ -126,10 +122,9 @@ def gerarNovoProjeto(debug):
         ( 4 ) ANGULAR + API
         ( 5 ) VUEJS + API
         Escolha: ''')
-
-        arquitetura = input('''Arquitetura
-        ( 1 ) Driven Domain Design 
-        ( 2 ) Clean Arquitecture
+        
+        arquitetura = input(f'''Arquitetura
+           {listarArquiteturas(diretorioBase)}
         ''')  
 
         confirma = input(f'''GERADOR DE PROJETOS
@@ -148,5 +143,5 @@ def gerarNovoProjeto(debug):
 
     #Verificando resposta se deve contunar oprocesso    
     if confirma == "1" :     
-       configurarProjeto(nome, diretorio, usuario, tipo, arquitetura)
+       configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase)
     

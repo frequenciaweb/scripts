@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Arquivo Atual",
+            "name": "Python: Bot",
             "type": "python",
             "request": "launch",
             "program": "src/python/bot.py",

@@ -12,7 +12,10 @@ import atualiza_projeto
 
 os.system('cls' if os.name == 'nt' else 'clear')
 
-def main():
+diretorioBase = os.getcwd()
+print("Diretório base: "+diretorioBase) 
+
+def main(diretorioBase):
     print('''Bem vindo ao Gerador de Projetos 2.0
     Requisitos Básicos:
     - NetCore SDK 5
@@ -30,10 +33,10 @@ def main():
     #Verificando qual ação será tomada 
     #Atualizar projeto ou gerar um novo
     if acao == '1': 
-        novo_projeto.gerarNovoProjeto('true')
+        novo_projeto.gerarNovoProjeto('true', diretorioBase)
     
     if acao == '2':
         atualiza_projeto.atualizarProjeto()         
     
     print("Processo Finalizado")
-main()
+main(diretorioBase)

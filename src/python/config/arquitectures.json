@@ -1,0 +1,91 @@
+{
+"arquitecutres":
+  [
+    {
+                "name":"Driven Domain Design",
+                "projects":[
+                    {
+                        "name": "Domain",
+                        "folder":"Domain\\%nameSolution%.Domain",
+                        "cli": "dotnet new classlib --name=%nameSolution%.Domain",
+                        "packages":[],
+                        "references":[]
+                    },
+                    {
+                        "name": "Domain.Service",
+                        "folder":"Domain\\%nameSolution%.Domain.Service",
+                        "cli": "dotnet new classlib --name=%nameSolution%.Domain.Service",
+                        "packages":["Newtonsoft.Json"],
+                        "references":["Domain"]
+                    },    
+                    {
+                        "name": "Infra.Data",
+                        "folder":"Infra\\%nameSolution%.Infra.Data",
+                        "cli": "dotnet new classlib --name=%nameSolution%.Infra.Data",
+                        "packages":[
+                            "Microsoft.EntityFrameworkCore",
+                            "Microsoft.EntityFrameworkCore.tools",
+                            "Microsoft.EntityFrameworkCore.SqlServer",
+                            "Pomelo.EntityFrameworkCore.MySql"
+                        ],
+                        "references":["Domain"]
+                    },
+                    {
+                        "name": "Infra.CorssCutting",
+                        "folder":"Infra\\%nameSolution%.Infra.CorssCutting",
+                        "cli": "dotnet new classlib --name=%nameSolution%.Infra.CorssCutting",
+                        "packages":["Newtonsoft.Json"],
+                        "references":[]
+                    },
+                    {
+                        "name": "Test",
+                        "folder":"Test\\%nameSolution%.Test",
+                        "cli": "dotnet new msTest --name=%nameSolution%.Test",
+                        "packages":[
+                            "Microsoft.EntityFrameworkCore",
+                            "Microsoft.EntityFrameworkCore.tools",
+                            "Microsoft.EntityFrameworkCore.SqlServer",
+                            "Pomelo.EntityFrameworkCore.MySql"
+                        ],
+                        "references":["Infra.CorssCutting", "Domain", "Domain.Services","Infra.Data"]
+                    }
+                ]  
+    },
+    {
+            "name":"Clean Arquitecture",
+            "projects":[
+                {
+                    "name": "Business",
+                    "folder":"Business\\%nameSolution%.Business",
+                    "cli": "dotnet new classlib --name=%nameSolution%.Business",
+                    "packages":[],
+                    "references":[]
+                },      
+                {
+                    "name": "Data",
+                    "folder":"Data\\%nameSolution%.Data",
+                    "cli": "dotnet new classlib --name=%nameSolution%.Data",
+                    "packages":[
+                        "Microsoft.EntityFrameworkCore",
+                        "Microsoft.EntityFrameworkCore.tools",
+                        "Microsoft.EntityFrameworkCore.SqlServer",
+                        "Pomelo.EntityFrameworkCore.MySql"
+                    ],
+                    "references":["Domain"]
+                },           
+                {
+                    "name": "Test",
+                    "folder":"Test\\%nameSolution%.Test",
+                    "cli": "dotnet new msTest --name=%nameSolution%.Test",
+                    "packages":[
+                        "Microsoft.EntityFrameworkCore",
+                        "Microsoft.EntityFrameworkCore.tools",
+                        "Microsoft.EntityFrameworkCore.SqlServer",
+                        "Pomelo.EntityFrameworkCore.MySql"
+                    ],
+                    "references":["Business", "Data"]
+                }
+            ]  
+    }
+  ]
+}
