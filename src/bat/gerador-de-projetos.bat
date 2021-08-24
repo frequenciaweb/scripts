@@ -1,33 +1,33 @@
 cls
 
 @echo off
-ECHO Bem vindo ao Gerador de Codigos 1.1. 
+ECHO Bem vindo ao Gerador de Codigos 1.1.2
 ECHO Requisitos Basicos
 ECHO - NetCore SDK
 ECHO - NPM
 ECHO - Pacote Angular
 ECHO - Pacote VueJS
 ECHO - Git
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 
 ECHO Escolha o nome para solucao
 set /p namespace="Solution: "
 
 cls
 
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 ECHO Escolha o diretorio para o projeto
 set /p diretorio="Diretorio: "
 
 cls
 
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 ECHO Informe usuario do github para preparar o git
 set /p usuarioGit="Usuario git: "
 
 cls
 
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 ECHO Escolha O Tipo de Projeto
 ECHO   ( 1 )   MVC
 
@@ -42,7 +42,7 @@ ECHO   ( 5 )   VUEJS + API
 set /p projeto="Projeto: "
 
 cls
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 ECHO Qual IDE vai usar?
 
 ECHO   ( 0 )   Nenhuma
@@ -55,7 +55,7 @@ set /p ide="IDE: "
 
 cls
 
-ECHO GERADOR DE PROJETOS 1.1
+ECHO GERADOR DE PROJETOS 1.1.2
 ECHO Solution: %namespace%
 ECHO Diretorio: %diretorio%
 ECHO Git: %usuarioGit%
@@ -69,9 +69,15 @@ rd %namespace% /s /q
 ECHO Criando a Solucao %namespace%
 ECHO Aguarde........
 
-dotnet new sln -o %namespace%
-
+md %namespace%
 cd %namespace%
+md src 
+
+git init 
+dotnet new gitignore
+cd src
+
+dotnet new sln --name %namespace%
 
 set diretorioRaiz=%cd%
 
@@ -223,9 +229,6 @@ del WeatherForecastController.cs /s
 dotnet build
 
 ECHO Configurando GIT....
-
-git init
-dotnet new gitignore
 
 if %usuarioGit%=="" GOTO abrir_ide else GOTO realizar_push
 
