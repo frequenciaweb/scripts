@@ -26,9 +26,8 @@ def gerarArquitetura(index, solucao, diretorioBase):
     projetos = []
     for projeto in arquitetura['projects']:
         folder = projeto['folder']
-        folder = folder.replace("%nameSolution%", solucao)
-        os.makedirs(folder)
-        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages']))
+        folder = folder.replace("%nameSolution%", solucao)        
+        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages'],projeto['references']))
         
     return projetos
 
@@ -61,27 +60,31 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     projetos = gerarArquitetura(projeto.arquitetura,nome, diretorioBase)    
 
     if (tipo == "1"):
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
+       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI/%nameSolution%.UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
 
     if (tipo == "2"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
 
     if (tipo == "3"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
+       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI/%nameSolution%.UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
     
     if (tipo == "4"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
        projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","angular"))
        
     if (tipo == "5"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"Api","dotnet new webapi --name=%nameSolution%.API"))
+       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
        projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","vue"))
  
     for projeto in projetos:
         projeto.gerar()
         mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
         adicionarProjetoNaSolucao(nome, projeto)
+
+    # print('Referenciando projetos')
+    # for projeto in projetos:
+    #     projeto.referenciar(diretorioSrc, projetos)
 
     # Deletando os arquivos desnecessarios 
     
@@ -93,7 +96,14 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     # Compilando os projeto
     executarComando('dotnet build')
     
-def gerarNovoProjeto(debug = 'false', diretorioBase = ""):
+    mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
+    # Executando primeiro commit
+    print('Realizando primeiro commit')
+    executarComando("git add * && git commit -m \"Primeiro commit\"")
+    
+
+            
+def gerarNovoProjeto(diretorioBase, acao, debug = 'false'):
     
     executarComando('cls' if os.name == 'nt' else 'clear')
    
@@ -125,7 +135,10 @@ def gerarNovoProjeto(debug = 'false', diretorioBase = ""):
         
         arquitetura = input(f'''Arquitetura
            {listarArquiteturas(diretorioBase)}
-        ''')  
+        ''') 
+        
+        if acao == '2':
+           solucoes = input('Digte separado por virgula o nome da cada Dominio: ')
 
         confirma = input(f'''GERADOR DE PROJETOS
         Solution" , { nome },

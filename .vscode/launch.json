@@ -8,8 +8,9 @@
             "name": "Python: Bot",
             "type": "python",
             "request": "launch",
+            //"program": "${file}",
             "program": "src/python/bot.py",
-            "console": "integratedTerminal"
+            "console": "externalTerminal"
         }
     ]
 }

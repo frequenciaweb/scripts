@@ -13,29 +13,35 @@ import atualiza_projeto
 os.system('cls' if os.name == 'nt' else 'clear')
 
 diretorioBase = os.getcwd()
-print("Diretório base: "+diretorioBase) 
-
 def main(diretorioBase):
-    print('''Bem vindo ao Gerador de Projetos 2.0
-    Requisitos Básicos:
-    - NetCore SDK 5
-    - NodeJS
-    - NPM
-        - Angular CLI
-        - VueJS CLI
-    - Git''')
+    print("########################################################################")
+    print("#                Bem vindo ao Gerador de Projetos                      #")
+    print("#                            Versão 2.0                                #")
+    print("#                                                                      #")
+    print("# Requisitos Básicos:                                                  #")
+    print("#    - NetCore SDK 5                                                   #")
+    print("#    - NodeJS                                                          #")
+    print("#         - Angular CLI                                                #")
+    print("#         - VueJS CLI                                                  #")
+    print("#    - Git                                                             #")
+    print("#                                                                      #")
+    print("#                                                                      #")
+    print("########################################################################")  
+    print(" ")  
+    print(" ")  
 
     acao = input('''Deseja criar ou atualizar um projeto?
-    ( 1 ) Criar Projeto
-    ( 2 ) Atualizar Projeto
+    ( 1 ) Criar Projeto [Dominio Unico]
+    ( 2 ) Criar Projeto [Dominios Multiplos]
+    ( 3 ) Atualizar Projeto
     Escolha: ''')
 
     #Verificando qual ação será tomada 
     #Atualizar projeto ou gerar um novo
-    if acao == '1': 
-        novo_projeto.gerarNovoProjeto('true', diretorioBase)
+    if acao == '1' or acao == '2': 
+        novo_projeto.gerarNovoProjeto(diretorioBase, acao, 'true')
     
-    if acao == '2':
+    if acao == '3':
         atualiza_projeto.atualizarProjeto()         
     
     print("Processo Finalizado")

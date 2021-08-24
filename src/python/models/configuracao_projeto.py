@@ -1,14 +1,18 @@
 import os
 import sys
 
+from funcoes import filtroProjeto
+
 class ConfiguracaoProjeto:
-    def __init__(self,identificador, solucao,pasta, cli, packages = [] ):    
+    def __init__(self,identificador, solucao,pasta, cli, packages = [], references = [] ):    
      self.identificador = identificador
      self.nome = solucao
-     self.cli = cli.replace("%nameSolution%",solucao)+ " --output="+pasta
+     pasta = pasta.replace("%nameSolution%",solucao)
+     self.cli = cli.replace("%nameSolution%",solucao)+ " --output="+pasta     
      self.dotnet =  cli.index("dotnet") >= 0 # identificar se o comando é dotnet ou npm
      self.projeto = self.nome+"."+identificador+".cs"
      self.caminho = pasta
+     self.references = references
      self.packages = packages
 
      if (cli == 'angular'):
@@ -19,10 +23,18 @@ class ConfiguracaoProjeto:
          self.cli = "vue create "+identificador
          self.projeto = ""
          self.caminho = pasta+"\\"+self.nome
+    
+    
+    def referenciar(self, diretorioRaiz, projetos):
+        for rf in self.references:
+            projeto = filtroProjeto(rf,projetos)     
+            os.chdir(self.caminho)# mudando para o diretorio onde ficara o projeto       
+            comando = "dotnet add "+self.projeto+" reference "+diretorioRaiz+"\\"+projeto.caminho+"\\"+projeto.projeto
+            os.system(comando)
 
     def gerar(self):
         print('Gerando projeto '+self.identificador) 
-            
+        os.makedirs(self.caminho)
         if (self.cli == 'angular'):
             os.chdir(self.caminho)# mudando para o diretorio onde ficara o projeto
             os.system(self.cli) 

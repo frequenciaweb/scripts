@@ -71,7 +71,7 @@
                         "Microsoft.EntityFrameworkCore.SqlServer",
                         "Pomelo.EntityFrameworkCore.MySql"
                     ],
-                    "references":["Domain"]
+                    "references":["Business"]
                 },           
                 {
                     "name": "Test",
