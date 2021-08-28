@@ -1,6 +1,6 @@
 @Echo off
 
-set entidades=Usuario Perfil
+set entidades=Sistema
 set namespace=GeDem
 set nameContext=GeDemContext
 
@@ -22,12 +22,12 @@ CALL :IRepositorieBase %namespace% %nameContext% > Codigos\Domain\Contracts\Repo
 CALL :IServiceBase %namespace% %nameContext% > Codigos\Domain\Contracts\Services\IServiceBase.cs
 
 FOR %%E in (%entidades%) do (
-   CALL :entidade %%E %namespace% > Codigos\Domain\Entities\%%E.cs     
-   CALL :contrato_repo %%E %namespace% > Codigos\Domain\Contracts\Repositories\IRepositorie%%E.cs  
-   CALL :implementacao_repo %%E %namespace% > Codigos\Infra\Repositories\Repositorie%%E.cs  
-   CALL :contrato_serv %%E %namespace% > Codigos\Domain\Contracts\Services\IService%%E.cs  
-   CALL :implementacao_serv %%E %namespace% > Codigos\Domain\Services\Service%%E.cs  
-   CALL :controller %%E %namespace% > Codigos\Controllers\%%EController.cs  
+   CALL :entidade %%E %namespace% %nameContext% > Codigos\Domain\Entities\%%E.cs     
+   CALL :contrato_repo %%E %namespace% %nameContext% > Codigos\Domain\Contracts\Repositories\IRepositorie%%E.cs  
+   CALL :implementacao_repo %%E %namespace% %nameContext% > Codigos\Infra\Repositories\Repositorie%%E.cs  
+   CALL :contrato_serv %%E %namespace% %nameContext% > Codigos\Domain\Contracts\Services\IService%%E.cs  
+   CALL :implementacao_serv %%E %namespace% %nameContext% > Codigos\Domain\Services\Service%%E.cs  
+   CALL :controller %%E %namespace% %nameContext% > Codigos\Controllers\%%EController.cs  
 )
 
 :IServiceBase
@@ -73,9 +73,9 @@ echo namespace %1.Infra.Data.Repositories
 echo {
 echo     public class RepositorieBase^<TEntity^> : IRepositorieBase^<TEntity^> where TEntity : class
 echo     {
-echo         private readonly %2 context;
+echo         private readonly %3 context;
 echo.
-echo         public RepositorieBase(%2 context)
+echo         public RepositorieBase(%3 context)
 echo         {
 echo             this.context = context;
 echo         }
@@ -134,8 +134,8 @@ echo {
 echo     public class ServiceBase^<TEntity^> : IServiceBase^<TEntity^> where TEntity : class
 echo     {
 echo         private readonly IRepositorieBase^<TEntity^> repositorieBase;
-echo         private readonly %2 context;
-echo         public ServiceBase(IRepositorieBase^<TEntity^> repositorieBase, %2 context)
+echo         private readonly %3 context;
+echo         public ServiceBase(IRepositorieBase^<TEntity^> repositorieBase, %3 context)
 echo         {
 echo             this.context = context;
 echo             this.repositorieBase = repositorieBase;
@@ -373,6 +373,8 @@ echo {
 echo.
 echo     public class Service%1 : ServiceBase^<%1^>, IService%1
 echo     {
+echo         private readonly IRepositorie%1 repositorie%1;
+echo.
 echo         public Service%1(IRepositorie%1 repo, %2 context) : base(repo, context)
 echo         {
 echo.
