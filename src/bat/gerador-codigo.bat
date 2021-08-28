@@ -1,7 +1,8 @@
 @Echo off
 
-set entidades=Processo SubProcesso Status Fase Visibilidade Atividade AtividadeAcao Acao Grupo Usuario
-set namespace=GestorDemandas
+set entidades=Usuario Perfil
+set namespace=GeDem
+set nameContext=GeDemContext
 
 cd ..
 
@@ -14,11 +15,11 @@ md Codigos\Infra\Repositories
 md Codigos\Domain\Services
 md Codigos\Controllers
 
-CALL :ServiceBase %namespace% > Codigos\Domain\Services\ServiceBase.cs  
-CALL :RepositorieBase %namespace% > Codigos\Infra\Repositories\RepositorieBase.cs 
-CALL :EntityBase %namespace% > Codigos\Domain\Entities\EntityBase.cs
-CALL :IRepositorieBase %namespace% > Codigos\Domain\Contracts\Repositories\IRepositorieBase.cs
-CALL :IServiceBase %namespace% > Codigos\Domain\Contracts\Services\IServiceBase.cs
+CALL :ServiceBase %namespace% %nameContext% > Codigos\Domain\Services\ServiceBase.cs  
+CALL :RepositorieBase %namespace% %nameContext% > Codigos\Infra\Repositories\RepositorieBase.cs 
+CALL :EntityBase %namespace% %nameContext% > Codigos\Domain\Entities\EntityBase.cs
+CALL :IRepositorieBase %namespace% %nameContext% > Codigos\Domain\Contracts\Repositories\IRepositorieBase.cs
+CALL :IServiceBase %namespace% %nameContext% > Codigos\Domain\Contracts\Services\IServiceBase.cs
 
 FOR %%E in (%entidades%) do (
    CALL :entidade %%E %namespace% > Codigos\Domain\Entities\%%E.cs     
@@ -72,9 +73,9 @@ echo namespace %1.Infra.Data.Repositories
 echo {
 echo     public class RepositorieBase^<TEntity^> : IRepositorieBase^<TEntity^> where TEntity : class
 echo     {
-echo         private readonly EFContext context;
+echo         private readonly %2 context;
 echo.
-echo         public RepositorieBase(EFContext context)
+echo         public RepositorieBase(%2 context)
 echo         {
 echo             this.context = context;
 echo         }
@@ -133,8 +134,8 @@ echo {
 echo     public class ServiceBase^<TEntity^> : IServiceBase^<TEntity^> where TEntity : class
 echo     {
 echo         private readonly IRepositorieBase^<TEntity^> repositorieBase;
-echo         private readonly EFContext context;
-echo         public ServicoBase(IrepositorieBase^<TEntity^> repositorieBase, EFContext context)
+echo         private readonly %2 context;
+echo         public ServiceBase(IRepositorieBase^<TEntity^> repositorieBase, %2 context)
 echo         {
 echo             this.context = context;
 echo             this.repositorieBase = repositorieBase;
@@ -142,20 +143,20 @@ echo         }
 echo.
 echo         public virtual TEntity Alterar(TEntity entity)
 echo         {
-echo             entity = repositorie.Alterar(entity);
+echo             entity = repositorieBase.Alterar(entity);
 echo             Commit();
 echo             return entity;
 echo         }
 echo.
 echo         public virtual void Excluir(TEntity entity)
 echo         {
-echo             repositorie.Excluir(entity);
+echo             repositorieBase.Excluir(entity);
 echo             Commit();
 echo         }
 echo.
 echo         public virtual TEntity Incluir(TEntity entity)
 echo         {
-echo             entity = repositorie.Incluir(entity);
+echo             entity = repositorieBase.Incluir(entity);
 echo             Commit();
 echo             return entity;
 echo         }
@@ -372,7 +373,7 @@ echo {
 echo.
 echo     public class Service%1 : ServiceBase^<%1^>, IService%1
 echo     {
-echo         public Service%1(IRepositorie%1 repo, EFContext context) : base(repo, context)
+echo         public Service%1(IRepositorie%1 repo, %2 context) : base(repo, context)
 echo         {
 echo.
 echo         }
@@ -406,9 +407,9 @@ echo namespace %2.Infra.Data.Repositories
 echo {
 echo     public class Repositorie%1 : RepositorieBase^<%1^>, IRepositorie%1
 echo     {
-echo         private EFContext Context { get; set; }
+echo         private %2 Context { get; set; }
 echo.
-echo         public Repositorie%1(EFContext context) : base(context)
+echo         public Repositorie%1(%2 context) : base(context)
 echo         {
 echo             Context = context;
 echo         }
