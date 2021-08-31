@@ -1,34 +1,51 @@
 @Echo off
 
-set entidades=Sistema
-set namespace=GeDem
-set nameContext=GeDemContext
+echo 'Aguarde......'
+set entidade=%1
+set entidade=%entidade:"=%
+set namespace=%2
+set namespace=%namespace:~0,-5%
+set namespace=%namespace:"=%
+set nameContext=%namespace%Context
 
-cd ..
+echo Gerando Arquivos para Entidade %entidade% Soluction %namespace% DBContext %nameContext%
 
-rd Codigos /s /q
 
-md Codigos\Domain\Entities
-md Codigos\Domain\Contracts\Repositories
-md Codigos\Domain\Contracts\Services
-md Codigos\Infra\Repositories
-md Codigos\Domain\Services
-md Codigos\Controllers
+set diretorioSRC=%cd%
 
-CALL :ServiceBase %namespace% %nameContext% > Codigos\Domain\Services\ServiceBase.cs  
-CALL :RepositorieBase %namespace% %nameContext% > Codigos\Infra\Repositories\RepositorieBase.cs 
-CALL :EntityBase %namespace% %nameContext% > Codigos\Domain\Entities\EntityBase.cs
-CALL :IRepositorieBase %namespace% %nameContext% > Codigos\Domain\Contracts\Repositories\IRepositorieBase.cs
-CALL :IServiceBase %namespace% %nameContext% > Codigos\Domain\Contracts\Services\IServiceBase.cs
+echo Criando Service Base
+CALL :ServiceBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain.Services\Services\ServiceBase.cs  
+echo Criando Repositorie Base
+CALL :RepositorieBase %namespace% %nameContext% > %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\RepositorieBase.cs 
+echo Criando Contrato de Repositorio Base
+CALL :IRepositorieBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\IRepositorieBase.cs
+echo Criando Contrato de Servico Base
+CALL :IServiceBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\IServiceBase.cs
+echo Criando Contrato de Repositorio 
+CALL :contrato_repo %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\IRepositorie%entidade%.cs  
+echo Implementando Contrato de Repositorio
+CALL :implementacao_repo %entidade% %namespace% %nameContext% > %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\Repositorie%entidade%.cs  
+echo Criando Contrato de Servico
+CALL :contrato_serv %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\IService%entidade%.cs  
+echo Implementando Contrato de Servico
+CALL :implementacao_serv %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain.Services\Services\Service%entidade%.cs     
 
-FOR %%E in (%entidades%) do (
-   CALL :entidade %%E %namespace% %nameContext% > Codigos\Domain\Entities\%%E.cs     
-   CALL :contrato_repo %%E %namespace% %nameContext% > Codigos\Domain\Contracts\Repositories\IRepositorie%%E.cs  
-   CALL :implementacao_repo %%E %namespace% %nameContext% > Codigos\Infra\Repositories\Repositorie%%E.cs  
-   CALL :contrato_serv %%E %namespace% %nameContext% > Codigos\Domain\Contracts\Services\IService%%E.cs  
-   CALL :implementacao_serv %%E %namespace% %nameContext% > Codigos\Domain\Services\Service%%E.cs  
-   CALL :controller %%E %namespace% %nameContext% > Codigos\Controllers\%%EController.cs  
-)
+cd %diretorioSRC%\UI\%namespace%.UI.MVC
+echo Gerando Views e controle temporario
+dotnet aspnet-codegenerator --project %namespace%.UI.MVC.csproj  controller -name %entidade%Controller -f -udl -m %entidade% -dc %nameContext%
+del %entidade%Controller.cs /s /q
+
+cd %diretorioSRC%
+
+echo Controle
+CALL :controller %entidade% %namespace% %nameContext% > %diretorioSRC%\UI\%namespace%.UI.MVC\Controllers\%entidade%Controller.cs  
+
+echo 'Processo Concluido!'
+
+:formataVariavel
+
+
+exit /b
 
 :IServiceBase
 
@@ -46,6 +63,7 @@ exit /b
 
 :IRepositorieBase
 
+echo using System;
 echo using System.Collections.Generic;
 echo.
 echo namespace %1.Domain.Contracts.Repositories
@@ -55,7 +73,7 @@ echo     {
 echo         TEntity Incluir(TEntity entity);
 echo         TEntity Alterar(TEntity entity);
 echo         void Excluir(TEntity entity);
-echo         TEntity Obter(int id);
+echo         TEntity Obter(Guid id);
 echo         List^<TEntity^> Obter();
 echo     }
 echo }
@@ -68,6 +86,7 @@ echo using %1.Domain.Contracts.Repositories;
 echo using %1.Infra.Data.EF;
 echo using System.Collections.Generic;
 echo using System.Linq;
+echo using System;
 echo.
 echo namespace %1.Infra.Data.Repositories
 echo {
@@ -97,7 +116,7 @@ echo             context.Set^<TEntity^>().Add(entity);
 echo             return entity;
 echo         }
 echo.
-echo         public virtual TEntity Obter(int id)
+echo         public virtual TEntity Obter(Guid id)
 echo         {
 echo             return context.Set^<TEntity^>().Find(id);
 echo         }
@@ -113,11 +132,12 @@ exit /b
 
 :EntityBase
 
+echo using System;
 echo namespace %1.Domain.Entities
 echo {
 echo     public abstract class EntityBase
 echo     {
-echo.
+echo        public Guid ID {get; set;}
 echo     }
 echo }
 
@@ -134,8 +154,8 @@ echo {
 echo     public class ServiceBase^<TEntity^> : IServiceBase^<TEntity^> where TEntity : class
 echo     {
 echo         private readonly IRepositorieBase^<TEntity^> repositorieBase;
-echo         private readonly %3 context;
-echo         public ServiceBase(IRepositorieBase^<TEntity^> repositorieBase, %3 context)
+echo         private readonly %2 context;
+echo         public ServiceBase(IRepositorieBase^<TEntity^> repositorieBase, %2 context)
 echo         {
 echo             this.context = context;
 echo             this.repositorieBase = repositorieBase;
@@ -375,7 +395,7 @@ echo     public class Service%1 : ServiceBase^<%1^>, IService%1
 echo     {
 echo         private readonly IRepositorie%1 repositorie%1;
 echo.
-echo         public Service%1(IRepositorie%1 repo, %2 context) : base(repo, context)
+echo         public Service%1(IRepositorie%1 repo, %3 context) : base(repo, context)
 echo         {
 echo.
 echo         }
@@ -409,9 +429,9 @@ echo namespace %2.Infra.Data.Repositories
 echo {
 echo     public class Repositorie%1 : RepositorieBase^<%1^>, IRepositorie%1
 echo     {
-echo         private %2 Context { get; set; }
+echo         private %3 Context { get; set; }
 echo.
-echo         public Repositorie%1(%2 context) : base(context)
+echo         public Repositorie%1(%3 context) : base(context)
 echo         {
 echo             Context = context;
 echo         }
@@ -432,3 +452,42 @@ echo     }
 echo }
 
 EXIT /B
+
+:dbcontext
+
+echo using %1.Domain.Entities;
+echo using Microsoft.EntityFrameworkCore;
+echo. 
+echo namespace %1.Infra.Data.EF
+echo {
+echo     public class %2 : DbContext
+echo     {  
+echo         public %2()
+echo         {
+echo. 
+echo         }
+echo. 		
+echo         public %2(DbContextOptions options) : base(options)
+echo         {
+echo.
+echo         }
+echo. 
+echo         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+echo         {
+echo             string connectionString = "server=localhost;uid=root;pwd=Ab134679;database=%1";
+echo             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+echo         }
+echo. 
+echo         protected override void OnModelCreating(ModelBuilder modelBuilder)
+echo         {
+echo.            
+echo         }
+echo     }
+echo }
+
+exit /b
+
+pause
+
+
+
