@@ -409,7 +409,7 @@ EXIT /B
 echo using %2.Domain.Contracts.Services;
 echo using %2.Domain.Entities;
 echo.
-echo namespace %2.Domain.Entities
+echo namespace %2.Domain.Contracts.Services 
 echo {
 echo     public interface IService%1 : IServiceBase^<%1^>
 echo     {
