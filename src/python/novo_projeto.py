@@ -7,6 +7,15 @@ from models.configuracao_projeto import ConfiguracaoProjeto
 from leitor_json import listarArquiteturas
 from leitor_json import retornaArquitetura
 
+def removendoArquivosDesnecessarios():
+   executarComando('del Class1.cs /s')
+   executarComando('del UnitTest1.cs /s')
+   executarComando('del WeatherForecast.cs /s')
+   executarComando('del WeatherForecastController.cs /s')
+
+def limparTela():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def executarComando(comando):
     os.system(comando)
 
@@ -22,14 +31,21 @@ def mudarDiretorio(nome):
 def gerarArquitetura(index, solucao, diretorioBase): 
    # Carregando o json da arquitetura selecionada
     arquitetura = retornaArquitetura(int(index)-1, diretorioBase)
-    print("Arquitetura: "+arquitetura['name'])
+    print("Template: "+arquitetura['name'])
     projetos = []
     for projeto in arquitetura['projects']:
         folder = projeto['folder']
         folder = folder.replace("%nameSolution%", solucao)        
-        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages'],projeto['references']))
+        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages'],projeto['references'], projeto['folders']))
         
     return projetos
+
+def diretoriosPadroes(diretorio):
+    os.makedirs(diretorio+"\docs")# criando pasta de documentos
+    os.makedirs(diretorio+"\docs\\diagramas")# criando pasta de diagramas
+    os.makedirs(diretorio+"\docs\\scripts")# criando pasta de scripts
+    os.makedirs(diretorio+"\docs\\casos de usos")# criando pasta de scripts
+    os.makedirs(diretorio+"\docs\\arquitetura")# criando pasta de scripts
 
 def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase):
 
@@ -42,6 +58,7 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     executarComando("rd "+nome+" /s /q")# Removendo o diretorio da solução caso ele já existe    
 
     os.makedirs(diretorioSrc)# criando diretorio do projeto
+    diretoriosPadroes(diretorioProjeto)
 
     mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
 
@@ -50,7 +67,7 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     projeto.gerarSolucao()    
     
     mudarDiretorio(diretorioProjeto)# mudando para o diretorio da solução    
-
+   
     executarComando("git init && dotnet new gitignore && echo # Projeto "+nome+" >> README.md")# inicializando o git    
     
     mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
@@ -58,24 +75,6 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     # Verificando qual arquitetura foi escolhida
     # Executando a configuração
     projetos = gerarArquitetura(projeto.arquitetura,nome, diretorioBase)    
-
-    if (tipo == "1"):
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI/%nameSolution%.UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
-
-    if (tipo == "2"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
-
-    if (tipo == "3"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
-       projetos.append(ConfiguracaoProjeto("UI.MVC",nome,"UI/%nameSolution%.UI.MVC","dotnet new mvc --name=%nameSolution%.UI.MVC"))
-    
-    if (tipo == "4"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
-       projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","angular"))
-       
-    if (tipo == "5"):
-       projetos.append(ConfiguracaoProjeto("Api",nome,"API/%nameSolution%.API","dotnet new webapi --name=%nameSolution%.API"))
-       projetos.append(ConfiguracaoProjeto("UI.Site",nome,"UI","vue"))
  
     for projeto in projetos:
         projeto.gerar()
@@ -86,12 +85,8 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     # for projeto in projetos:
     #     projeto.referenciar(diretorioSrc, projetos)
 
-    # Deletando os arquivos desnecessarios 
-    
-    executarComando('del Class1.cs /s')
-    executarComando('del UnitTest1.cs /s')
-    executarComando('del WeatherForecast.cs /s')
-    executarComando('del WeatherForecastController.cs /s')
+    # Deletando os arquivos desnecessarios     
+    removendoArquivosDesnecessarios()
    
     # Compilando os projeto
     executarComando('dotnet build')
@@ -100,12 +95,13 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     # Executando primeiro commit
     print('Realizando primeiro commit')
     executarComando("git add * && git commit -m \"Primeiro commit\"")
-    
 
+    print('Abrindo VS Code')
+    executarComando("code .")
             
 def gerarNovoProjeto(diretorioBase, acao, debug = 'false'):
     
-    executarComando('cls' if os.name == 'nt' else 'clear')
+    limparTela()
    
     nome = ""
     diretorio = ""
@@ -115,8 +111,8 @@ def gerarNovoProjeto(diretorioBase, acao, debug = 'false'):
     confirma = ""     
 
     if (debug == 'true'):    
-       nome = "TestandoBot"
-       diretorio = "D:\Projetos"
+       nome = "TestandoBotPython"
+       diretorio = "D:\Teste"
        usuario = ""
        tipo = "3"
        arquitetura = "1"        
@@ -151,7 +147,7 @@ def gerarNovoProjeto(diretorioBase, acao, debug = 'false'):
         ( 1 ) Sim
         Confirmação: ''')      
 
-    executarComando('cls' if os.name == 'nt' else 'clear')
+    limparTela()
     print('Aguarde....')
 
     #Verificando resposta se deve contunar oprocesso    

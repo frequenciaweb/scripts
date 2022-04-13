@@ -19,7 +19,7 @@ def main(diretorioBase):
     print("#                            Versão 2.0                                #")
     print("#                                                                      #")
     print("# Requisitos Básicos:                                                  #")
-    print("#    - NetCore SDK 5                                                   #")
+    print("#    - NetCore SDK                                                     #")
     print("#    - NodeJS                                                          #")
     print("#         - Angular CLI                                                #")
     print("#         - VueJS CLI                                                  #")

@@ -11,23 +11,34 @@ set nameContext=%namespace%Context
 echo Gerando Arquivos para Entidade '%entidade%' Solution '%namespace%' DBContext '%nameContext%'
 
 set diretorioSRC=%cd%
+echo Diretorio %diretorioSRC%
 
 echo Criando Service Base
+md %diretorioSRC%\Domain\%namespace%.Domain.Services\
 CALL :ServiceBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain.Services\Services\ServiceBase.cs
 echo Criando Repositorie Base
+md %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\
 CALL :RepositorieBase %namespace% %nameContext% > %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\RepositorieBase.cs 
 echo Criando Contrato de Repositorio Base
+md  %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\
 CALL :IRepositorieBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\IRepositorieBase.cs
 echo Criando Contrato de Servico Base
+md  %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\
 CALL :IServiceBase %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\IServiceBase.cs
 echo Criando Contrato de Repositorio 
+md  %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\
 CALL :contrato_repo %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Repositories\IRepositorie%entidade%.cs  
 echo Implementando Contrato de Repositorio
+md %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\
 CALL :implementacao_repo %entidade% %namespace% %nameContext% > %diretorioSRC%\Infra\%namespace%.Infra.Data\Repositories\Repositorie%entidade%.cs  
 echo Criando Contrato de Servico
+md %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\
 CALL :contrato_serv %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain\Contracts\Services\IService%entidade%.cs  
 echo Implementando Contrato de Servico
+md %diretorioSRC%\Domain\%namespace%.Domain.Services\Services\
 CALL :implementacao_serv %entidade% %namespace% %nameContext% > %diretorioSRC%\Domain\%namespace%.Domain.Services\Services\Service%entidade%.cs     
+
+dotnet tool install -g dotnet-aspnet-codegenerator
 
 cd %diretorioSRC%\UI\%namespace%.UI.MVC
 echo Gerando Views e controle temporario
@@ -42,6 +53,12 @@ CALL :controller %entidade% %namespace% %nameContext% > %diretorioSRC%\UI\%names
 echo 'Processo Concluido!'
 
 :formataVariavel
+
+
+exit /b
+
+:ControleMVC
+
 
 
 exit /b

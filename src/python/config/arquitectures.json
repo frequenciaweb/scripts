@@ -2,25 +2,43 @@
 "arquitecutres":
   [
     {
-                "name":"Driven Domain Design",
+                "name":"MVC+API+DDD",
                 "projects":[
                     {
+                        "name": "Api",
+                        "folder":"Api",
+                        "cli": "dotnet new webapi --name=%nameSolution%.API",
+                        "packages":[],
+                        "references":[],
+                        "folders":["Extensions","Comum","Models"]
+                    },
+                    {
+                        "name": "Mvc",
+                        "folder":"UI",
+                        "cli": "dotnet new mvc --name=%nameSolution%.UI.MVC",
+                        "packages":[],
+                        "references":[],
+                        "folders":["Extensions","Comum"]
+                    },
+                    {
                         "name": "Domain",
-                        "folder":"Domain\\%nameSolution%.Domain",
+                        "folder":"Core\\Domain",
                         "cli": "dotnet new classlib --name=%nameSolution%.Domain",
                         "packages":[],
-                        "references":[]
+                        "references":[],
+                        "folders":["Entities","Contratcs","Comum","Enumerators","VO"]
                     },
                     {
                         "name": "Domain.Service",
-                        "folder":"Domain\\%nameSolution%.Domain.Service",
+                        "folder":"Core\\Domain.Service",
                         "cli": "dotnet new classlib --name=%nameSolution%.Domain.Service",
                         "packages":["Newtonsoft.Json"],
-                        "references":["Domain"]
+                        "references":["Domain"],
+                        "folders":["Services"]
                     },    
                     {
                         "name": "Infra.Data",
-                        "folder":"Infra\\%nameSolution%.Infra.Data",
+                        "folder":"Core\\Infra.Data",
                         "cli": "dotnet new classlib --name=%nameSolution%.Infra.Data",
                         "packages":[
                             "Microsoft.EntityFrameworkCore",
@@ -28,18 +46,20 @@
                             "Microsoft.EntityFrameworkCore.SqlServer",
                             "Pomelo.EntityFrameworkCore.MySql"
                         ],
-                        "references":["Domain"]
+                        "references":["Domain"],
+                        "folders":["Repositories", "EF","EF\\Configs"]
                     },
                     {
                         "name": "Infra.CorssCutting",
-                        "folder":"Infra\\%nameSolution%.Infra.CorssCutting",
+                        "folder":"Core\\Infra.CorssCutting",
                         "cli": "dotnet new classlib --name=%nameSolution%.Infra.CorssCutting",
                         "packages":["Newtonsoft.Json"],
-                        "references":[]
+                        "references":[],
+                        "folders":["Annotations", "Extensions"]
                     },
                     {
                         "name": "Test",
-                        "folder":"Test\\%nameSolution%.Test",
+                        "folder":"Test\\Test",
                         "cli": "dotnet new msTest --name=%nameSolution%.Test",
                         "packages":[
                             "Microsoft.EntityFrameworkCore",
@@ -47,7 +67,16 @@
                             "Microsoft.EntityFrameworkCore.SqlServer",
                             "Pomelo.EntityFrameworkCore.MySql"
                         ],
-                        "references":["Infra.CorssCutting", "Domain", "Domain.Services","Infra.Data"]
+                        "references":["Infra.CorssCutting", "Domain", "Domain.Services","Infra.Data"],
+                        "folders":[]
+                    },
+                    {
+                        "name": "Infra.DI",
+                        "folder":"Core\\Infra.DI",
+                        "cli": "dotnet new classlib --name=%nameSolution%.Infra.DI",
+                        "packages":[],
+                        "references":["Domain","Domain.Service","Infra.Data","Infra.CorssCutting"],
+                        "folders":[]
                     }
                 ]  
     },

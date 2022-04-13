@@ -3,8 +3,8 @@ import sys
 
 from funcoes import filtroProjeto
 
-class ConfiguracaoProjeto:
-    def __init__(self,identificador, solucao,pasta, cli, packages = [], references = [] ):    
+class  ConfiguracaoProjeto:
+    def __init__(self,identificador, solucao,pasta, cli, packages = [], references = [], folders = [] ):    
      self.identificador = identificador
      self.nome = solucao
      pasta = pasta.replace("%nameSolution%",solucao)
@@ -14,6 +14,7 @@ class ConfiguracaoProjeto:
      self.caminho = pasta
      self.references = references
      self.packages = packages
+     self.folders = folders
 
      if (cli == 'angular'):
          self.cli = "ng new "+identificador
@@ -23,14 +24,24 @@ class ConfiguracaoProjeto:
          self.cli = "vue create "+identificador
          self.projeto = ""
          self.caminho = pasta+"\\"+self.nome
-    
+
+
+    def dotNet(self):
+        print('Instalando pacotes')                    
+        for pk in self.packages:
+            os.system("dotnet add package "+pk)
+
+        print('Criando pastas')    
+        if (self.dotnet):
+            for fd in self.folders:
+                os.makedirs(fd)    
     
     def referenciar(self, diretorioRaiz, projetos):
         for rf in self.references:
             projeto = filtroProjeto(rf,projetos)     
             os.chdir(self.caminho)# mudando para o diretorio onde ficara o projeto       
             comando = "dotnet add "+self.projeto+" reference "+diretorioRaiz+"\\"+projeto.caminho+"\\"+projeto.projeto
-            os.system(comando)
+            os.system(comando)            
 
     def gerar(self):
         print('Gerando projeto '+self.identificador) 
@@ -48,11 +59,11 @@ class ConfiguracaoProjeto:
             os.system(self.cli)
             os.chdir(self.caminho)# mudando para o diretorio onde ficara o projeto
       
-        print('Instalando pacotes')             
         if (self.dotnet):
-            for pk in self.packages:
-                os.system("dotnet add package "+pk)
+            self.dotNet()
 
         if (self.dotnet == 'false'):
             for pk in self.packages:
-                os.system("npm install -g "+pk)
+                os.system("npm install -g "+pk)              
+
+   
