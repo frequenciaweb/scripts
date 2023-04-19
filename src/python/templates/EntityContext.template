@@ -1,0 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace %solution%.%projectName%.EF
+{
+    public  class EFContext : DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var connectionString = "Server=localhost;Port=3307;Database=%solution%;Uid=root;Pwd=Ab134679;";
+                optionsBuilder.UseMySql(connectionString, serverVersion: ServerVersion.AutoDetect(connectionString));
+            }
+        }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+        }
+    }
+}

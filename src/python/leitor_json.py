@@ -1,7 +1,19 @@
+from ast import Return
 import os
 import pandas as pd
 import numpy as np
 import sys
+
+def retornarArquivoTemplate(name, diretorioBase):
+   arquivo = diretorioBase+'\\'+'src\\python\\templates\\'+name+'.template'; 
+   if (os.path.exists(arquivo)):
+    arq = open(arquivo)
+    return arq.readlines()    
+   
+   arquivo = diretorioBase+'\\'+'python\\templates\\'+name+'.template'; 
+   if (os.path.exists(arquivo)):
+    arq = open(arquivo)
+    return arq.readlines()      
 
 def retornaArquitetura(index, diretorioBase):
     try:      

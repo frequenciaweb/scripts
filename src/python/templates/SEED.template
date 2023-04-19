@@ -1,0 +1,30 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace %solution%.%projectName%.EF
+{
+    public static class SEED
+    {
+        public static void Popular(EFContext context)
+        {
+
+            try
+            {
+                if (!context.Database.EnsureCreated())
+                {
+                    context.Database.Migrate();
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            CadastrosBasicos(context);
+
+        }
+
+        private static void CadastrosBasicos(EFContext context)
+        {
+            context.SaveChanges();
+        }
+    }
+}

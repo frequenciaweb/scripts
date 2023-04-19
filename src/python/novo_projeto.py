@@ -6,6 +6,12 @@ from models.projeto import Projeto
 from models.configuracao_projeto import ConfiguracaoProjeto
 from leitor_json import listarArquiteturas
 from leitor_json import retornaArquitetura
+import json
+import subprocess as sp
+
+diretorioRaiz = ""
+diretorioSrc = ""
+diretorioProjeto = ""
 
 def removendoArquivosDesnecessarios():
    executarComando('del Class1.cs /s')
@@ -36,7 +42,7 @@ def gerarArquitetura(index, solucao, diretorioBase):
     for projeto in arquitetura['projects']:
         folder = projeto['folder']
         folder = folder.replace("%nameSolution%", solucao)        
-        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages'],projeto['references'], projeto['folders']))
+        projetos.append(ConfiguracaoProjeto(projeto['name'],solucao,folder,projeto['cli'], projeto['packages'],projeto['references'], projeto['folders'],projeto['templates']))
         
     return projetos
 
@@ -47,8 +53,16 @@ def diretoriosPadroes(diretorio):
     os.makedirs(diretorio+"\docs\\casos de usos")# criando pasta de scripts
     os.makedirs(diretorio+"\docs\\arquitetura")# criando pasta de scripts
 
-def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase):
+def criarGlobalJson():
+    
+    versionSDK = sp.run("dotnet --version", capture_output=True, text=True)
+    SDK = versionSDK.stdout.replace("\n","")
+    SDK = SDK.replace("\r","")
+    print("Criando globalJSon versão "+SDK)
+    executarComando("dotnet new globaljson --sdk-version "+ SDK)# mantendo versão do sdk para todos os projetos
 
+def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase):
+  
     diretorioRaiz = diretorio
     diretorioSrc = diretorio+ "/" + nome+"/src/"
     diretorioProjeto = diretorio+ "/" + nome+"/"
@@ -69,21 +83,23 @@ def configurarProjeto(nome, diretorio, usuario, tipo, arquitetura, diretorioBase
     mudarDiretorio(diretorioProjeto)# mudando para o diretorio da solução    
    
     executarComando("git init && dotnet new gitignore && echo # Projeto "+nome+" >> README.md")# inicializando o git    
-    
+   
     mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
+
+    criarGlobalJson()
     
     # Verificando qual arquitetura foi escolhida
     # Executando a configuração
     projetos = gerarArquitetura(projeto.arquitetura,nome, diretorioBase)    
  
     for projeto in projetos:
-        projeto.gerar()
+        projeto.gerar(diretorioBase)
         mudarDiretorio(diretorioSrc)# mudando para o diretorio do projeto    
         adicionarProjetoNaSolucao(nome, projeto)
 
-    # print('Referenciando projetos')
-    # for projeto in projetos:
-    #     projeto.referenciar(diretorioSrc, projetos)
+    print('Referenciando projetos')
+    for projeto in projetos:
+        projeto.referenciar(diretorioSrc, projetos)
 
     # Deletando os arquivos desnecessarios     
     removendoArquivosDesnecessarios()
